@@ -1,0 +1,299 @@
+<?php
+
+/**
+ * @file
+ * Install, update, and uninstall functions for Event Registration Manager.
+ *
+ * This file contains the database schema definitions and hooks that are
+ * executed during module installation and uninstallation:
+ *
+ * - hook_schema(): Defines the custom database tables.
+ * - hook_install(): Runs after module is enabled.
+ * - hook_uninstall(): Runs when module is uninstalled.
+ *
+ * The schema defines two tables:
+ * 1. event_config - Stores event configuration data (admin-created events).
+ * 2. event_registration - Stores user registrations.
+ *
+ * @package Drupal\event_registration_manager
+ */
+
+/**
+ * Implements hook_schema().
+ *
+ * Defines the database tables required by the Event Registration Manager
+ * module. These tables are automatically created when the module is
+ * installed and dropped when uninstalled.
+ *
+ * Table Relationships:
+ * - event_registration.event_id -> event_config.id (Foreign Key)
+ *
+ * Note: Drupal's Schema API handles table creation/deletion and ensures
+ * cross-database compatibility (MySQL, PostgreSQL, SQLite).
+ *
+ * @return array
+ *   An associative array where keys are table names and values are
+ *   table specifications.
+ */
+function event_registration_manager_schema() {
+  $schema = [];
+
+  /*
+   * =========================================================================
+   * TABLE: event_config
+   * =========================================================================
+   * Stores event configuration data created by administrators.
+   *
+   * Each row represents a single event with:
+   * - Basic information (name, category)
+   * - Date information (event date, registration period)
+   * - Audit fields (created, changed timestamps)
+   *
+   * The registration period (start_date to end_date) determines when
+   * users can register for this event via the public form.
+   */
+  $schema['event_config'] = [
+    'description' => 'Stores event configuration data created by administrators.',
+    'fields' => [
+      // Primary Key - Auto-incrementing unique identifier.
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key: Unique event identifier.',
+      ],
+
+      // Event name - Display name shown on registration form.
+      'event_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Human-readable name of the event.',
+      ],
+
+      // Category - Machine name from CATEGORIES constant.
+      // Values: online_workshop, hackathon, conference, one_day_workshop
+      'category' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'description' => 'Event category machine name (e.g., hackathon, conference).',
+      ],
+
+      // Event date - When the actual event takes place.
+      'event_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'The date of the event in YYYY-MM-DD format.',
+      ],
+
+      // Registration start date - When registration opens.
+      'registration_start_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Date when registration opens (YYYY-MM-DD).',
+      ],
+
+      // Registration end date - When registration closes.
+      // Must be <= event_date (validated in EventConfigForm).
+      'registration_end_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Date when registration closes (YYYY-MM-DD).',
+      ],
+
+      // Created timestamp - Set on insert.
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unix timestamp when the event was created.',
+      ],
+
+      // Changed timestamp - Updated on every modification.
+      'changed' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unix timestamp when the event was last modified.',
+      ],
+    ],
+
+    // Primary key definition.
+    'primary key' => ['id'],
+
+    // Indexes for query optimization.
+    'indexes' => [
+      // Index on category for filtering events by type.
+      'category' => ['category'],
+
+      // Index on event_date for date-based queries.
+      'event_date' => ['event_date'],
+
+      // Composite index for registration period queries.
+      // Used by getActiveEvents() to find open registrations.
+      'registration_dates' => ['registration_start_date', 'registration_end_date'],
+    ],
+  ];
+
+  /*
+   * =========================================================================
+   * TABLE: event_registration
+   * =========================================================================
+   * Stores user registration data submitted via the public form.
+   *
+   * Design decisions:
+   * - Denormalized data (category, event_date, event_name) is stored
+   *   for faster queries and historical preservation if events change.
+   * - A foreign key to event_config.id maintains referential integrity.
+   * - The email + event_date combination is indexed for duplicate checking.
+   */
+  $schema['event_registration'] = [
+    'description' => 'Stores event registration data submitted by users.',
+    'fields' => [
+      // Primary Key - Auto-incrementing unique identifier.
+      'id' => [
+        'type' => 'serial',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Primary key: Unique registration identifier.',
+      ],
+
+      // Registrant information.
+      'full_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Full name of the person registering.',
+      ],
+
+      'email' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Email address of the registrant.',
+      ],
+
+      'college_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Name of the educational institution.',
+      ],
+
+      'department' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Academic department or field of study.',
+      ],
+
+      // Foreign Key - References event_config table.
+      'event_id' => [
+        'type' => 'int',
+        'unsigned' => TRUE,
+        'not null' => TRUE,
+        'description' => 'Foreign key reference to event_config.id.',
+      ],
+
+      // Denormalized event data for performance and history.
+      'category' => [
+        'type' => 'varchar',
+        'length' => 100,
+        'not null' => TRUE,
+        'description' => 'Denormalized: Event category at time of registration.',
+      ],
+
+      'event_date' => [
+        'type' => 'varchar',
+        'length' => 20,
+        'not null' => TRUE,
+        'description' => 'Denormalized: Event date at time of registration.',
+      ],
+
+      'event_name' => [
+        'type' => 'varchar',
+        'length' => 255,
+        'not null' => TRUE,
+        'description' => 'Denormalized: Event name at time of registration.',
+      ],
+
+      // Audit field - When registration was submitted.
+      'created' => [
+        'type' => 'int',
+        'not null' => TRUE,
+        'default' => 0,
+        'description' => 'Unix timestamp when registration was submitted.',
+      ],
+    ],
+
+    // Primary key definition.
+    'primary key' => ['id'],
+
+    // Indexes for query optimization.
+    'indexes' => [
+      // Index on event_id for JOIN queries.
+      'event_id' => ['event_id'],
+
+      // Index on email for single-user lookups.
+      'email' => ['email'],
+
+      // Index on event_date for admin filtering.
+      'event_date' => ['event_date'],
+
+      // Composite index for duplicate checking.
+      // Used by checkDuplicateRegistration() method.
+      'email_event_date' => ['email', 'event_date'],
+    ],
+
+    // Foreign key relationship.
+    // Note: Not all databases enforce FKs, but this documents the relationship.
+    'foreign keys' => [
+      'event_config' => [
+        'table' => 'event_config',
+        'columns' => ['event_id' => 'id'],
+      ],
+    ],
+  ];
+
+  return $schema;
+}
+
+/**
+ * Implements hook_install().
+ *
+ * Runs after the module is enabled. Used to display a confirmation
+ * message and perform any initial setup.
+ *
+ * The database tables are automatically created by Drupal based on
+ * hook_schema() before this hook is called.
+ */
+function event_registration_manager_install() {
+  // Display success message to the user.
+  \Drupal::messenger()->addStatus(t('Event Registration Manager has been installed successfully. Visit <a href=":settings">settings</a> to configure the module.', [
+    ':settings' => '/admin/config/event-registration/settings',
+  ]));
+}
+
+/**
+ * Implements hook_uninstall().
+ *
+ * Runs when the module is uninstalled. Cleans up any configuration
+ * stored by the module.
+ *
+ * Note: Database tables from hook_schema() are automatically dropped
+ * by Drupal before this hook is called.
+ */
+function event_registration_manager_uninstall() {
+  // Delete module configuration from the config system.
+  // This removes the settings stored via SettingsForm.
+  \Drupal::configFactory()
+    ->getEditable('event_registration_manager.settings')
+    ->delete();
+
+  // Display confirmation message.
+  \Drupal::messenger()->addStatus(t('Event Registration Manager has been uninstalled. All data has been removed.'));
+}

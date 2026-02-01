@@ -1,0 +1,12 @@
+name: 'Event Registration Manager'
+type: module
+description: 'A comprehensive event registration management system with admin configuration, user registration, email notifications, and reporting.'
+package: Custom
+core_version_requirement: ^10
+php: 8.1
+
+dependencies:
+  - drupal:datetime
+  - drupal:options
+
+configure: event_registration_manager.settings_form

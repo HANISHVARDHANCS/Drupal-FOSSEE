@@ -1,0 +1,344 @@
+/**
+ * @file
+ * Registration form styles for Event Registration Manager.
+ */
+
+/* ========================================
+   Registration Form Container
+   ======================================== */
+
+.event-registration-intro {
+    text-align: center;
+    margin-bottom: 35px;
+    padding: 30px;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-radius: 16px;
+    color: #fff;
+    box-shadow: 0 10px 40px rgba(102, 126, 234, 0.3);
+}
+
+.event-registration-intro h2 {
+    margin: 0 0 15px 0;
+    font-size: 32px;
+    font-weight: 700;
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.event-registration-intro .description {
+    font-size: 16px;
+    opacity: 0.95;
+    max-width: 600px;
+    margin: 0 auto;
+    line-height: 1.6;
+}
+
+/* ========================================
+   Registration Form Sections
+   ======================================== */
+
+.event-registration-section {
+    border: none !important;
+    border-radius: 16px !important;
+    margin-bottom: 30px !important;
+    overflow: hidden;
+    box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08) !important;
+    background: #fff;
+}
+
+.event-registration-section summary {
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%) !important;
+    padding: 22px 25px !important;
+    font-weight: 700 !important;
+    font-size: 18px !important;
+    color: #2c3e50 !important;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    border-left: 5px solid #667eea;
+}
+
+.event-registration-section summary:hover {
+    background: linear-gradient(135deg, #e9ecef 0%, #dee2e6 100%) !important;
+}
+
+.event-registration-section[open] summary {
+    border-bottom: 1px solid #e9ecef;
+}
+
+.event-registration-section>.details-wrapper {
+    padding: 30px 25px !important;
+    background: #fff;
+}
+
+/* ========================================
+   Form Inputs
+   ======================================== */
+
+.event-registration-input,
+.event-registration-select {
+    width: 100%;
+    padding: 16px 18px !important;
+    border: 2px solid #e9ecef !important;
+    border-radius: 10px !important;
+    font-size: 16px !important;
+    transition: all 0.3s ease !important;
+    background-color: #fff !important;
+}
+
+.event-registration-input:focus,
+.event-registration-select:focus {
+    outline: none !important;
+    border-color: #667eea !important;
+    box-shadow: 0 0 0 4px rgba(102, 126, 234, 0.15) !important;
+}
+
+.event-registration-input:hover,
+.event-registration-select:hover {
+    border-color: #adb5bd !important;
+}
+
+.event-registration-input::placeholder {
+    color: #adb5bd;
+    font-style: italic;
+}
+
+/* ========================================
+   Form Labels and Descriptions
+   ======================================== */
+
+.event-registration-section .form-item {
+    margin-bottom: 25px;
+}
+
+.event-registration-section .form-item label {
+    display: block;
+    margin-bottom: 10px;
+    font-weight: 600;
+    color: #2c3e50;
+    font-size: 15px;
+}
+
+.event-registration-section .form-item label .form-required {
+    color: #e74c3c;
+    font-weight: 700;
+}
+
+.event-registration-section .form-item .description {
+    margin-top: 8px;
+    font-size: 13px;
+    color: #6c757d;
+    line-height: 1.5;
+}
+
+/* ========================================
+   Submit Button
+   ======================================== */
+
+.event-registration-actions {
+    text-align: center;
+    padding: 30px 0;
+}
+
+.event-registration-submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    border: none !important;
+    color: #fff !important;
+    padding: 18px 50px !important;
+    font-size: 18px !important;
+    font-weight: 700 !important;
+    border-radius: 12px !important;
+    cursor: pointer !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 8px 30px rgba(102, 126, 234, 0.4) !important;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.event-registration-submit:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 12px 40px rgba(102, 126, 234, 0.5) !important;
+    background: linear-gradient(135deg, #5a6fd6 0%, #6a4190 100%) !important;
+}
+
+.event-registration-submit:active {
+    transform: translateY(-1px) !important;
+}
+
+/* ========================================
+   AJAX Loading Indicator
+   ======================================== */
+
+.ajax-progress {
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+    margin-left: 15px;
+    padding: 8px 16px;
+    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
+    border-radius: 20px;
+    font-size: 13px;
+    color: #495057;
+}
+
+.ajax-progress-throbber {
+    display: inline-flex;
+    align-items: center;
+}
+
+/* ========================================
+   Messages
+   ======================================== */
+
+.messages--status {
+    background: linear-gradient(135deg, #d4edda 0%, #c3e6cb 100%) !important;
+    border: none !important;
+    border-left: 5px solid #28a745 !important;
+    color: #155724 !important;
+    padding: 20px 25px !important;
+    border-radius: 10px !important;
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.15);
+}
+
+.messages--error {
+    background: linear-gradient(135deg, #f8d7da 0%, #f5c6cb 100%) !important;
+    border: none !important;
+    border-left: 5px solid #dc3545 !important;
+    color: #721c24 !important;
+    padding: 20px 25px !important;
+    border-radius: 10px !important;
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 4px 15px rgba(220, 53, 69, 0.15);
+}
+
+.messages--warning {
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%) !important;
+    border: none !important;
+    border-left: 5px solid #ffc107 !important;
+    color: #856404 !important;
+    padding: 20px 25px !important;
+    border-radius: 10px !important;
+    margin-bottom: 25px;
+    font-size: 15px;
+    line-height: 1.6;
+    box-shadow: 0 4px 15px rgba(255, 193, 7, 0.15);
+}
+
+/* ========================================
+   No Events Message
+   ======================================== */
+
+.event-registration-closed {
+    text-align: center;
+    padding: 50px 30px;
+    background: linear-gradient(135deg, #fff3cd 0%, #ffeeba 100%);
+    border-radius: 16px;
+    border-left: 5px solid #ffc107;
+    font-size: 18px;
+    color: #856404;
+    box-shadow: 0 5px 20px rgba(255, 193, 7, 0.2);
+}
+
+/* ========================================
+   Select Dropdown Styling
+   ======================================== */
+
+.event-registration-select {
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23495057' d='M6 9L1 4h10z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 15px center;
+    padding-right: 40px !important;
+    cursor: pointer;
+}
+
+.event-registration-select option {
+    padding: 10px;
+}
+
+/* ========================================
+   Responsive Design
+   ======================================== */
+
+@media screen and (max-width: 768px) {
+    .event-registration-intro {
+        padding: 20px;
+    }
+
+    .event-registration-intro h2 {
+        font-size: 24px;
+    }
+
+    .event-registration-intro .description {
+        font-size: 14px;
+    }
+
+    .event-registration-section summary {
+        padding: 18px 20px !important;
+        font-size: 16px !important;
+    }
+
+    .event-registration-section>.details-wrapper {
+        padding: 20px 15px !important;
+    }
+
+    .event-registration-submit {
+        padding: 15px 35px !important;
+        font-size: 16px !important;
+    }
+
+    .event-registration-input,
+    .event-registration-select {
+        padding: 14px 15px !important;
+        font-size: 15px !important;
+    }
+}
+
+/* ========================================
+   Animations
+   ======================================== */
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.event-registration-section {
+    animation: fadeIn 0.4s ease-out;
+}
+
+.event-registration-section:nth-child(1) {
+    animation-delay: 0.1s;
+}
+
+.event-registration-section:nth-child(2) {
+    animation-delay: 0.2s;
+}
+
+.event-registration-section:nth-child(3) {
+    animation-delay: 0.3s;
+}
+
+/* ========================================
+   Focus States for Accessibility
+   ======================================== */
+
+.event-registration-submit:focus {
+    outline: 3px solid rgba(102, 126, 234, 0.5) !important;
+    outline-offset: 3px;
+}
+
+.event-registration-input:focus-visible,
+.event-registration-select:focus-visible {
+    outline: none;
+}

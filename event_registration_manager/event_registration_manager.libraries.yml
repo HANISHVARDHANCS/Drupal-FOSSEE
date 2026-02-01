@@ -1,0 +1,29 @@
+admin_styles:
+  version: 1.x
+  css:
+    theme:
+      css/event_registration_manager.admin.css: {}
+
+admin_listing:
+  version: 1.x
+  js:
+    js/admin_listing.js: {}
+  css:
+    theme:
+      css/event_registration_manager.admin.css: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+    - core/jquery
+
+registration_form:
+  version: 1.x
+  css:
+    theme:
+      css/event_registration_manager.form.css: {}
+  js:
+    js/registration_form.js: {}
+  dependencies:
+    - core/drupal
+    - core/drupal.ajax
+    - core/jquery

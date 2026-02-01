@@ -1,0 +1,230 @@
+<?php
+
+/**
+ * @file
+ * Primary module hooks for Event Registration Manager.
+ *
+ * This file contains the main hook implementations for the module:
+ * - hook_help(): Provides help text for the module.
+ * - hook_mail(): Defines email templates for the Mail API.
+ * - hook_theme(): Registers custom theme implementations.
+ *
+ * Note: Business logic is kept in service classes (src/Service/) and
+ * forms (src/Form/) following Drupal best practices. This file only
+ * contains hook implementations.
+ *
+ * @package Drupal\event_registration_manager
+ */
+
+use Drupal\Core\Routing\RouteMatchInterface;
+
+/**
+ * Implements hook_help().
+ *
+ * Provides help text displayed on the module help page at:
+ * /admin/help/event_registration_manager
+ *
+ * @param string $route_name
+ *   The current route name.
+ * @param \Drupal\Core\Routing\RouteMatchInterface $route_match
+ *   The current route match.
+ *
+ * @return string|null
+ *   The help text HTML or NULL if not applicable.
+ */
+function event_registration_manager_help($route_name, RouteMatchInterface $route_match) {
+  switch ($route_name) {
+    case 'help.page.event_registration_manager':
+      $output = '<h3>' . t('About') . '</h3>';
+      $output .= '<p>' . t('The Event Registration Manager module provides a comprehensive system for managing event registrations. It allows administrators to configure events and users to register for them.') . '</p>';
+      $output .= '<h3>' . t('Features') . '</h3>';
+      $output .= '<ul>';
+      $output .= '<li>' . t('Admin event configuration with date-based registration periods') . '</li>';
+      $output .= '<li>' . t('Dynamic registration form with AJAX-powered dropdowns') . '</li>';
+      $output .= '<li>' . t('Email notifications to users and administrators') . '</li>';
+      $output .= '<li>' . t('Admin listing page with filters and CSV export') . '</li>';
+      $output .= '</ul>';
+      $output .= '<h3>' . t('Usage') . '</h3>';
+      $output .= '<p>' . t('To get started:') . '</p>';
+      $output .= '<ol>';
+      $output .= '<li>' . t('Configure settings at <a href=":settings">Event Registration Settings</a>.', [
+        ':settings' => '/admin/config/event-registration/settings',
+      ]) . '</li>';
+      $output .= '<li>' . t('Create events at <a href=":events">Event Configuration</a>.', [
+        ':events' => '/admin/config/event-registration/events',
+      ]) . '</li>';
+      $output .= '<li>' . t('View registrations at <a href=":reports">Event Registrations</a>.', [
+        ':reports' => '/admin/reports/event-registrations',
+      ]) . '</li>';
+      $output .= '</ol>';
+      return $output;
+
+    default:
+      return NULL;
+  }
+}
+
+/**
+ * Implements hook_mail().
+ *
+ * Defines email templates for the module. This hook is called by the
+ * Mail API when EventMailService sends emails.
+ *
+ * Two email types are supported:
+ * 1. registration_confirmation - Sent to users after registration.
+ * 2. admin_notification - Sent to admin when a new registration occurs.
+ *
+ * @param string $key
+ *   The mail key identifying which email template to use.
+ * @param array $message
+ *   The message array to be modified. Contains:
+ *   - from: The sender address.
+ *   - subject: The email subject line.
+ *   - body: Array of body lines.
+ *   - langcode: Language code for translation.
+ * @param array $params
+ *   Parameters passed from EventMailService containing registration data.
+ */
+function event_registration_manager_mail($key, &$message, $params) {
+  // Get translation options based on the message language.
+  $options = ['langcode' => $message['langcode']];
+
+  switch ($key) {
+    /*
+     * User Confirmation Email
+     * -----------------------
+     * Sent immediately after successful registration to confirm
+     * the user's participation in the event.
+     */
+    case 'registration_confirmation':
+      // Set the from address to the site's configured email.
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+
+      // Build the subject line with the event name.
+      $message['subject'] = t('Event Registration Confirmation - @event_name', [
+        '@event_name' => $params['event_name'],
+      ], $options);
+
+      // Build the email body with a professional format.
+      // Each array element becomes a paragraph in the email.
+      $message['body'][] = t('Dear @name,', [
+        '@name' => $params['full_name'],
+      ], $options);
+
+      $message['body'][] = '';
+
+      $message['body'][] = t('Thank you for registering for the following event:', [], $options);
+
+      $message['body'][] = '';
+
+      // Event details section.
+      $message['body'][] = t('Event Name: @event_name', [
+        '@event_name' => $params['event_name'],
+      ], $options);
+
+      $message['body'][] = t('Event Date: @event_date', [
+        '@event_date' => $params['event_date'],
+      ], $options);
+
+      $message['body'][] = t('Category: @category', [
+        '@category' => $params['category'],
+      ], $options);
+
+      $message['body'][] = '';
+
+      // Closing message.
+      $message['body'][] = t('We look forward to seeing you at the event!', [], $options);
+
+      $message['body'][] = '';
+
+      $message['body'][] = t('Best regards,', [], $options);
+      $message['body'][] = t('The Event Team', [], $options);
+      break;
+
+    /*
+     * Admin Notification Email
+     * ------------------------
+     * Sent to the configured admin email when a new registration
+     * is received. Only sent if admin notifications are enabled
+     * in module settings.
+     */
+    case 'admin_notification':
+      $message['from'] = \Drupal::config('system.site')->get('mail');
+
+      $message['subject'] = t('New Event Registration - @event_name', [
+        '@event_name' => $params['event_name'],
+      ], $options);
+
+      // Notification header.
+      $message['body'][] = t('A new registration has been received:', [], $options);
+
+      $message['body'][] = '';
+
+      // Registrant information section.
+      $message['body'][] = t('Registrant Name: @name', [
+        '@name' => $params['full_name'],
+      ], $options);
+
+      $message['body'][] = t('Email: @email', [
+        '@email' => $params['email'],
+      ], $options);
+
+      $message['body'][] = t('College: @college', [
+        '@college' => $params['college_name'],
+      ], $options);
+
+      $message['body'][] = t('Department: @department', [
+        '@department' => $params['department'],
+      ], $options);
+
+      $message['body'][] = '';
+
+      // Event details section.
+      $message['body'][] = t('Event Details:', [], $options);
+
+      $message['body'][] = t('Event Name: @event_name', [
+        '@event_name' => $params['event_name'],
+      ], $options);
+
+      $message['body'][] = t('Event Date: @event_date', [
+        '@event_date' => $params['event_date'],
+      ], $options);
+
+      $message['body'][] = t('Category: @category', [
+        '@category' => $params['category'],
+      ], $options);
+      break;
+  }
+}
+
+/**
+ * Implements hook_theme().
+ *
+ * Registers theme hooks for custom template implementations.
+ * Currently registers a theme for the admin listing page, though
+ * the default table render is used in the controller.
+ *
+ * @param mixed $existing
+ *   Existing theme implementations.
+ * @param string $type
+ *   The type of extension (module or theme).
+ * @param string $theme
+ *   The theme name.
+ * @param string $path
+ *   The path to the extension.
+ *
+ * @return array
+ *   An associative array of theme hook definitions.
+ */
+function event_registration_manager_theme($existing, $type, $theme, $path) {
+  return [
+    // Custom theme for admin listing (optional, for future customization).
+    'event_registration_admin_listing' => [
+      'variables' => [
+        'registrations' => [],
+        'total_count' => 0,
+        'filters' => [],
+      ],
+    ],
+  ];
+}

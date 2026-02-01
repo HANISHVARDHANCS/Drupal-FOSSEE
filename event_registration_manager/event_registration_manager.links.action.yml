@@ -1,0 +1,5 @@
+event_registration_manager.event_add_action:
+  route_name: event_registration_manager.event_add
+  title: 'Add Event'
+  appears_on:
+    - event_registration_manager.event_list

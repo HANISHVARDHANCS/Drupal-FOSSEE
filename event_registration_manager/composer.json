@@ -1,0 +1,30 @@
+{
+  "name": "drupal/event_registration_manager",
+  "type": "drupal-custom-module",
+  "description": "A comprehensive event registration management system for Drupal 10 with admin configuration, user registration, email notifications, and reporting.",
+  "keywords": [
+    "Drupal",
+    "event",
+    "registration",
+    "management",
+    "custom module"
+  ],
+  "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/event_registration_manager",
+  "minimum-stability": "dev",
+  "require": {
+    "php": ">=8.1",
+    "drupal/core": "^10"
+  },
+  "autoload": {
+    "psr-4": {
+      "Drupal\\event_registration_manager\\": "src/"
+    }
+  },
+  "extra": {
+    "drupal": {
+      "version": "1.0.0",
+      "datestamp": "1738387618"
+    }
+  }
+}

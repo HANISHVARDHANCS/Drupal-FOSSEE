@@ -1,0 +1,11 @@
+# Local task tabs for events
+event_registration_manager.event_list_tab:
+  title: 'Events List'
+  route_name: event_registration_manager.event_list
+  base_route: event_registration_manager.event_list
+
+event_registration_manager.event_add_tab:
+  title: 'Add Event'
+  route_name: event_registration_manager.event_add
+  base_route: event_registration_manager.event_list
+  weight: 10

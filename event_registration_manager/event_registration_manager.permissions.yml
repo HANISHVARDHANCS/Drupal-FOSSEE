@@ -1,0 +1,18 @@
+administer event registrations:
+  title: 'Administer Event Registrations'
+  description: 'Access the event registration admin pages, view registrations, and export data.'
+  restrict access: TRUE
+
+configure event registration settings:
+  title: 'Configure Event Registration Settings'
+  description: 'Configure event registration module settings.'
+  restrict access: TRUE
+
+manage events:
+  title: 'Manage Events'
+  description: 'Create, edit, and delete events.'
+  restrict access: TRUE
+
+register for events:
+  title: 'Register for Events'
+  description: 'Access the event registration form.'

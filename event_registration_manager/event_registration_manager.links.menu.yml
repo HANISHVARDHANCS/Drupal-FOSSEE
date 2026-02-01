@@ -1,0 +1,31 @@
+# Main menu entry
+event_registration_manager.admin:
+  title: 'Event Registration'
+  description: 'Configure events and manage registrations.'
+  parent: system.admin_config
+  route_name: event_registration_manager.settings_form
+  weight: 10
+
+# Settings link
+event_registration_manager.settings:
+  title: 'Settings'
+  description: 'Configure event registration module settings.'
+  parent: event_registration_manager.admin
+  route_name: event_registration_manager.settings_form
+  weight: 0
+
+# Event configuration link
+event_registration_manager.events:
+  title: 'Events'
+  description: 'Configure events for registration.'
+  parent: event_registration_manager.admin
+  route_name: event_registration_manager.event_list
+  weight: 10
+
+# Reports menu entry
+event_registration_manager.reports:
+  title: 'Event Registrations'
+  description: 'View and export event registrations.'
+  parent: system.admin_reports
+  route_name: event_registration_manager.admin_listing
+  weight: 10
